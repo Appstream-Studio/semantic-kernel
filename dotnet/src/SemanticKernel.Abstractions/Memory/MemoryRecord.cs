@@ -49,6 +49,7 @@ public class MemoryRecord : DataEntryBase
     /// <param name="additionalMetadata">Optional string for saving custom metadata.</param>
     /// <param name="key">Optional existing database key.</param>
     /// <param name="timestamp">optional timestamp.</param>
+    /// <param name="filterable">Optional payload which can be used for filtering when retrieving memories.</param>
     /// <returns>Memory record</returns>
     public static MemoryRecord ReferenceRecord(
         string externalId,
@@ -57,7 +58,8 @@ public class MemoryRecord : DataEntryBase
         Embedding<float> embedding,
         string? additionalMetadata = null,
         string? key = null,
-        DateTimeOffset? timestamp = null)
+        DateTimeOffset? timestamp = null,
+        object? filterable = null)
     {
         return new MemoryRecord(
             new MemoryRecordMetadata
@@ -67,7 +69,8 @@ public class MemoryRecord : DataEntryBase
                 id: externalId,
                 description: description ?? string.Empty,
                 text: string.Empty,
-                additionalMetadata: additionalMetadata ?? string.Empty
+                additionalMetadata: additionalMetadata ?? string.Empty,
+                filterable: filterable ?? new object()
             ),
             embedding,
             key,
@@ -84,7 +87,8 @@ public class MemoryRecord : DataEntryBase
     /// <param name="embedding">Source content embedding.</param>
     /// <param name="additionalMetadata">Optional string for saving custom metadata.</param>
     /// <param name="key">Optional existing database key.</param>
-    /// <param name="timestamp">optional timestamp.</param>
+    /// <param name="timestamp">Optional timestamp.</param>
+    /// <param name="filterable">Optional payload which can be used for filtering when retrieving memories.</param>
     /// <returns>Memory record</returns>
     public static MemoryRecord LocalRecord(
         string id,
@@ -93,7 +97,8 @@ public class MemoryRecord : DataEntryBase
         Embedding<float> embedding,
         string? additionalMetadata = null,
         string? key = null,
-        DateTimeOffset? timestamp = null)
+        DateTimeOffset? timestamp = null,
+        object? filterable = null)
     {
         return new MemoryRecord
         (
@@ -104,7 +109,8 @@ public class MemoryRecord : DataEntryBase
                 text: text,
                 description: description ?? string.Empty,
                 externalSourceName: string.Empty,
-                additionalMetadata: additionalMetadata ?? string.Empty
+                additionalMetadata: additionalMetadata ?? string.Empty,
+                filterable: filterable ?? new object()
             ),
             embedding,
             key,

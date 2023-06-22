@@ -57,8 +57,11 @@ public sealed class QdrantFilter : IValidatable
     [JsonDerivedType(typeof(GeoRadiusCondition))]
     public abstract class Condition
     {
-        [JsonPropertyName("key")]
+        [JsonIgnore]
         public string Key { get; set; } = string.Empty;
+
+        [JsonPropertyName("key")]
+        public string SerializedKey => $"filterable.{this.Key}";
     }
 
     public sealed class MatchCondition : Condition, IValidatable
@@ -71,6 +74,11 @@ public sealed class QdrantFilter : IValidatable
             Verify.NotNullOrEmpty(this.Key, "Match key is NULL");
             Verify.NotNull(this.Match, "Match condition is NULL");
             this.Match!.Validate();
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Key} {this.Match}";
         }
     }
 
@@ -158,6 +166,28 @@ public sealed class QdrantFilter : IValidatable
             Verify.True(
                 this.Value != null || this.Text != null || this.Any != null || this.Except != null,
                 "No match conditions are specified");
+        }
+
+        public override string ToString()
+        {
+            if (this.Value != null)
+            {
+                return $"equals {{{this.Value}}}";
+            }
+            if (this.Text != null)
+            {
+                return $"contains text {{{this.Text}}}";
+            }
+            if (this.Any != null)
+            {
+                return $"is any of: {{{string.Join(", ", this.Any)}}}";
+            }
+            if (this.Except != null)
+            {
+                return $"is anything except: {{{string.Join(", ", this.Except)}}}";
+            }
+
+            return base.ToString();
         }
     }
 
