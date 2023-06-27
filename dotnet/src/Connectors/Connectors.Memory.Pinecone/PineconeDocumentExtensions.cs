@@ -80,8 +80,7 @@ public static class PineconeDocumentExtensions
             pineconeDocument.Text ?? string.Empty,
             string.Empty,
             pineconeDocument.SourceId ?? string.Empty,
-            additionalMetadataJson,
-            filterable: new object()
+            additionalMetadataJson
         );
 
         DateTimeOffset? timestamp = pineconeDocument.CreatedAt != null

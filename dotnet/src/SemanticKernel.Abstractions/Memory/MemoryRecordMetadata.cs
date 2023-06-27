@@ -79,7 +79,7 @@ public class MemoryRecordMetadata : ICloneable
         string description,
         string externalSourceName,
         string additionalMetadata,
-        object filterable
+        object? filterable = null
     )
     {
         this.IsReference = isReference;
@@ -88,7 +88,7 @@ public class MemoryRecordMetadata : ICloneable
         this.Text = text;
         this.Description = description;
         this.AdditionalMetadata = additionalMetadata;
-        this.Filterable = filterable;
+        this.Filterable = filterable ?? new object();
     }
 
     /// <summary>
