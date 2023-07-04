@@ -104,4 +104,13 @@ public interface IQdrantVectorDbClient
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     public IAsyncEnumerable<string> ListCollectionsAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Create an index on a payload field.
+    /// </summary>
+    /// <param name="collectionName">The name assigned to a collection of vectors.</param>
+    /// <param name="fieldName">Payload field name.</param>
+    /// <param name="fieldSchema">Payload field schema type.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    public Task CreateIndexAsync(string collectionName, string fieldName, QdrantPayloadSchemaType fieldSchema, CancellationToken cancellationToken = default);
 }

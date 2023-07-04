@@ -468,6 +468,28 @@ public sealed class QdrantVectorDbClient : IQdrantVectorDbClient
         }
     }
 
+    /// <inheritdoc/>
+    public async Task CreateIndexAsync(string collectionName, string fieldName, QdrantPayloadSchemaType fieldSchema, CancellationToken cancellationToken = default)
+    {
+        this._logger.LogDebug("Creating {0} index on {1} in collection {2}", fieldSchema, fieldName, collectionName);
+
+        using var request = CreateIndexRequest
+            .Create(collectionName, fieldName, fieldSchema)
+            .Build();
+
+        (HttpResponseMessage response, string responseContent) = await this.ExecuteHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException e)
+        {
+            this._logger.LogError(e, "Creating index failed: {0}, {1}", e.Message, responseContent);
+            throw;
+        }
+    }
+
     #region private ================================================================================
 
     private readonly ILogger _logger;
