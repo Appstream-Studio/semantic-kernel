@@ -307,6 +307,48 @@ public sealed class QdrantVectorDbClient : IQdrantVectorDbClient
     }
 
     /// <inheritdoc/>
+    public async Task OverwriteFilterableAsync(string collectionName, string pointId, object filterable, CancellationToken cancellationToken = default)
+    {
+        this._logger.LogDebug("Overwriting filterable");
+        Verify.NotNullOrEmpty(collectionName, "Collection name is empty");
+        Verify.NotNullOrEmpty(pointId, "Point id is empty");
+        Verify.NotNull(filterable, "New filterable is NULL");
+
+        var existingRecordsAsyncEnumerable = this.GetVectorsByIdAsync(collectionName, new[] { pointId }, withVectors: false, cancellationToken: cancellationToken);
+        var enumerator = existingRecordsAsyncEnumerable.GetAsyncEnumerator(cancellationToken);
+        QdrantVectorRecord? existingRecord;
+        await using (enumerator)
+        {
+            existingRecord = await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : null;
+        }
+        if (existingRecord == null)
+        {
+            throw new QdrantMemoryException(
+                QdrantMemoryException.ErrorCodes.FailedToOverwriteFilterablePayload,
+                "Failed to overwrite vector payload. Vector to update not found.");
+        }
+
+        var payload = existingRecord.Payload;
+        payload["filterable"] = filterable;
+
+        using var request = OverwritePayloadRequest
+            .Create(collectionName, new[] { pointId }, payload)
+            .Build();
+
+        (HttpResponseMessage response, string responseContent) = await this.ExecuteHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            response.EnsureSuccessStatusCode();
+            this._logger.LogDebug("Filterable overwritten");
+        }
+        catch (HttpRequestException e)
+        {
+            this._logger.LogError(e, "Overwriting filterable request failed: {0}", e.Message);
+        }
+    }
+
+    /// <inheritdoc/>
     public async IAsyncEnumerable<(QdrantVectorRecord, double)> FindNearestInCollectionAsync(
         string collectionName,
         IEnumerable<float> target,

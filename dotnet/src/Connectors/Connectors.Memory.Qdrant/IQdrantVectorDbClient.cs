@@ -58,6 +58,16 @@ public interface IQdrantVectorDbClient
     public Task UpsertVectorsAsync(string collectionName, IEnumerable<QdrantVectorRecord> vectorData, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Overwrite the 'filterable' field in given vector's payload.
+    /// </summary>
+    /// <param name="collectionName">The name assigned to a collection of vectors.</param>
+    /// <param name="pointId">The unique ID used to index Qdrant vector entries.</param>
+    /// <param name="filterable">Value of the filterable payload property to be overwritten.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns></returns>
+    public Task OverwriteFilterableAsync(string collectionName, string pointId, object filterable, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Find the nearest vectors in a collection using vector similarity search.
     /// </summary>
     /// <param name="collectionName">The name assigned to a collection of vectors.</param>
