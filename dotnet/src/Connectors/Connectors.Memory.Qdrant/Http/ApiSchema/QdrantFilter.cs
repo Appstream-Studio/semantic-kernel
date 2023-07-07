@@ -75,7 +75,7 @@ public sealed class QdrantFilter : IValidatable
             Verify.NotNull(this.Match, "Match condition is NULL");
             this.Match!.Validate();
         }
-
+        
         public override string ToString()
         {
             return $"{this.Key} {this.Match}";
@@ -167,7 +167,7 @@ public sealed class QdrantFilter : IValidatable
                 this.Value != null || this.Text != null || this.Any != null || this.Except != null,
                 "No match conditions are specified");
         }
-
+        
         public override string ToString()
         {
             if (this.Value != null)

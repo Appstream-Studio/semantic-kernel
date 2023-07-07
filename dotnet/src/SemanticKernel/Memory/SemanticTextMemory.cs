@@ -201,7 +201,7 @@ public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticT
             minRelevanceScore: minRelevanceScore,
             withEmbeddings: withEmbeddings,
             cancellationToken: cancellationToken);
-
+            
         await foreach ((MemoryRecord, double) result in results.WithCancellation(cancellationToken))
         {
             yield return MemoryQueryResult.FromMemoryRecord(result.Item1, result.Item2);
