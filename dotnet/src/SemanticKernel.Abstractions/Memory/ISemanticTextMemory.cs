@@ -100,7 +100,7 @@ public interface ISemanticTextMemory
 /// <summary>
 /// An interface for semantic memory that creates and recalls memories associated with text with support for metadata filtering.
 /// </summary>
-/// <typeparam name="TFilter">Type of filter used for metada filtering.</typeparam>
+/// <typeparam name="TFilter">Type of filter used for metadata filtering.</typeparam>
 public interface ISemanticTextMemory<TFilter> : ISemanticTextMemory
 {
     /// <summary>
