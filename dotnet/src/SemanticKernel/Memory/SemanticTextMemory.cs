@@ -160,6 +160,28 @@ public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticT
     }
 
     /// <inheritdoc/>
+    public async Task<string> SaveInformationAsync(
+        string collection,
+        string text,
+        string id,
+        string? description = null,
+        string? additionalMetadata = null,
+        object? filterable = null,
+        CancellationToken cancellationToken = default)
+    {
+        var embedding = await this._embeddingGenerator.GenerateEmbeddingAsync(text, cancellationToken).ConfigureAwait(false);
+        MemoryRecord data = MemoryRecord.LocalRecord(
+            id: id, text: text, description: description, additionalMetadata: additionalMetadata, embedding: embedding, filterable: filterable);
+
+        if (!(await this._storage.DoesCollectionExistAsync(collection, cancellationToken).ConfigureAwait(false)))
+        {
+            await this._storage.CreateCollectionAsync(collection, cancellationToken).ConfigureAwait(false);
+        }
+
+        return await this._storage.UpsertAsync(collection, data, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async IAsyncEnumerable<MemoryQueryResult> SearchAsync(
         string collection,
         string query,
@@ -179,7 +201,7 @@ public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticT
             minRelevanceScore: minRelevanceScore,
             withEmbeddings: withEmbeddings,
             cancellationToken: cancellationToken);
-
+            
         await foreach ((MemoryRecord, double) result in results.WithCancellation(cancellationToken))
         {
             yield return MemoryQueryResult.FromMemoryRecord(result.Item1, result.Item2);

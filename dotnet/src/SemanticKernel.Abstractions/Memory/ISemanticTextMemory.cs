@@ -104,6 +104,26 @@ public interface ISemanticTextMemory
 public interface ISemanticTextMemory<TFilter> : ISemanticTextMemory
 {
     /// <summary>
+    /// Save some information into the semantic memory with filterable payload, keeping a copy of the source information.
+    /// </summary>
+    /// <param name="collection">Collection where to save the information.</param>
+    /// <param name="text">Information to save.</param>
+    /// <param name="id">Unique identifier.</param>
+    /// <param name="description">Optional description.</param>
+    /// <param name="additionalMetadata">Optional string for saving custom metadata.</param>
+    /// <param name="filterable">Optional object saved with the information allowing rigid filtering on its fields.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Unique identifier of the saved memory record.</returns>
+    public Task<string> SaveInformationAsync(
+        string collection,
+        string text,
+        string id,
+        string? description = null,
+        string? additionalMetadata = null,
+        object? filterable = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Find some information in memory.
     /// </summary>
     /// <param name="collection">Collection to search.</param>

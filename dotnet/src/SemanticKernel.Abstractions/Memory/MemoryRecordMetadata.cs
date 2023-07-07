@@ -55,6 +55,13 @@ public class MemoryRecordMetadata : ICloneable
     public string AdditionalMetadata { get; }
 
     /// <summary>
+    /// Field for saving payload which can be used for filtering when retrieving memories.
+    /// </summary>
+    [JsonInclude]
+    [JsonPropertyName("filterable")]
+    public object Filterable { get; }
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="isReference">True if source data is local, false if source data comes from an external service</param>
@@ -63,6 +70,7 @@ public class MemoryRecordMetadata : ICloneable
     /// <param name="description"><see cref="MemoryRecord"/> description.</param>
     /// <param name="externalSourceName">Name of the external source if isReference is true.</param>
     /// <param name="additionalMetadata">Field for saving custom metadata with a memory.</param>
+    /// <param name="filterable">Payload which can be used for filtering when retrieving memories.</param>
     [JsonConstructor]
     public MemoryRecordMetadata(
         bool isReference,
@@ -70,7 +78,8 @@ public class MemoryRecordMetadata : ICloneable
         string text,
         string description,
         string externalSourceName,
-        string additionalMetadata
+        string additionalMetadata,
+        object? filterable = null
     )
     {
         this.IsReference = isReference;
@@ -79,6 +88,7 @@ public class MemoryRecordMetadata : ICloneable
         this.Text = text;
         this.Description = description;
         this.AdditionalMetadata = additionalMetadata;
+        this.Filterable = filterable ?? new object();
     }
 
     /// <summary>
