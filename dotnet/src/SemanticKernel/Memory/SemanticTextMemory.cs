@@ -145,7 +145,7 @@ public class SemanticTextMemory : ISemanticTextMemory, IDisposable
 /// <summary>
 /// Implementation of <see cref="ISemanticTextMemory{TFilter}"/>.
 /// </summary>
-/// <typeparam name="TFilter">Type of filter used for metada filtering.</typeparam>
+/// <typeparam name="TFilter">Type of filter used for metadata filtering.</typeparam>
 public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticTextMemory<TFilter>
 {
     private readonly IMemoryStore<TFilter> _storage;
@@ -201,7 +201,7 @@ public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticT
             minRelevanceScore: minRelevanceScore,
             withEmbeddings: withEmbeddings,
             cancellationToken: cancellationToken);
-            
+
         await foreach ((MemoryRecord, double) result in results.WithCancellation(cancellationToken))
         {
             yield return MemoryQueryResult.FromMemoryRecord(result.Item1, result.Item2);
