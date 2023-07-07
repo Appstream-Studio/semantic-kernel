@@ -105,6 +105,11 @@ public sealed class SKContext
     public ISemanticTextMemory Memory { get; }
 
     /// <summary>
+    /// Semantic memory with filtering capabilities
+    /// </summary>
+    public ISemanticTextMemory<TFilter>? GetFilterableMemory<TFilter>() => this.Memory as ISemanticTextMemory<TFilter>;
+
+    /// <summary>
     /// Read only skills collection
     /// </summary>
     public IReadOnlySkillCollection? Skills { get; internal set; }
