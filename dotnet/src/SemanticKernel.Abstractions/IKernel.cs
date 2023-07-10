@@ -34,6 +34,11 @@ public interface IKernel
     ISemanticTextMemory Memory { get; }
 
     /// <summary>
+    /// Semantic memory instance with filtering capabilities
+    /// </summary>
+    ISemanticTextMemory<TFilter>? GetFilterableMemory<TFilter>();
+
+    /// <summary>
     /// Reference to the engine rendering prompt templates
     /// </summary>
     IPromptTemplateEngine PromptTemplateEngine { get; }

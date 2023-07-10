@@ -74,6 +74,7 @@ public class QdrantMemoryException : SKException
             ErrorCodes.FailedToRemoveVectorData => "Failed to remove vector data",
             ErrorCodes.FailedToConvertMemoryRecordToQdrantVectorRecord => "Failed to convert memory record to Qdrant vector record",
             ErrorCodes.FailedToConvertQdrantVectorRecordToMemoryRecord => "Failed to convert Qdrant vector record to memory record",
+            ErrorCodes.FailedToOverwriteFilterablePayload => "Failed to overwrite vector payload",
             _ => $"Unknown error ({errorCode:G})",
         };
 
@@ -118,6 +119,11 @@ public class QdrantMemoryException : SKException
         /// <summary>
         /// Failed to convert a Qdrant vector record to a memory record.
         /// </summary>
-        FailedToConvertQdrantVectorRecordToMemoryRecord
+        FailedToConvertQdrantVectorRecordToMemoryRecord,
+
+        /// <summary>
+        /// Failed to overwrite vector payload.
+        /// </summary>
+        FailedToOverwriteFilterablePayload
     }
 }

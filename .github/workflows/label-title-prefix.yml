@@ -50,6 +50,7 @@ jobs:
             // Check if the issue or PR has the label
             if (labelAdded in prefixLabels) {
               let prefix = prefixLabels[labelAdded];
+
               switch(context.eventName) {
                 case 'issues':
                   github.rest.issues.update({
@@ -70,5 +71,6 @@ jobs:
                   break
                 default:
                   core.setFailed('Unrecognited eventName: ' + context.eventName);
+
               }
             }

@@ -96,3 +96,50 @@ public interface ISemanticTextMemory
     /// <returns>A group of collection names.</returns>
     public Task<IList<string>> GetCollectionsAsync(CancellationToken cancellationToken = default);
 }
+
+/// <summary>
+/// An interface for semantic memory that creates and recalls memories associated with text with support for metadata filtering.
+/// </summary>
+/// <typeparam name="TFilter">Type of filter used for metadata filtering.</typeparam>
+public interface ISemanticTextMemory<TFilter> : ISemanticTextMemory
+{
+    /// <summary>
+    /// Save some information into the semantic memory with filterable payload, keeping a copy of the source information.
+    /// </summary>
+    /// <param name="collection">Collection where to save the information.</param>
+    /// <param name="text">Information to save.</param>
+    /// <param name="id">Unique identifier.</param>
+    /// <param name="description">Optional description.</param>
+    /// <param name="additionalMetadata">Optional string for saving custom metadata.</param>
+    /// <param name="filterable">Optional object saved with the information allowing rigid filtering on its fields.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Unique identifier of the saved memory record.</returns>
+    public Task<string> SaveInformationAsync(
+        string collection,
+        string text,
+        string id,
+        string? description = null,
+        string? additionalMetadata = null,
+        object? filterable = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Find some information in memory.
+    /// </summary>
+    /// <param name="collection">Collection to search.</param>
+    /// <param name="query">What to search for.</param>
+    /// <param name="filters">Filters to be applied during search.</param>
+    /// <param name="limit">How many results to return.</param>
+    /// <param name="minRelevanceScore">Minimum relevance score, from 0 to 1, where 1 means exact match.</param>
+    /// <param name="withEmbeddings">Whether to return the embeddings of the memories found.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Memories found.</returns>
+    public IAsyncEnumerable<MemoryQueryResult> SearchAsync(
+        string collection,
+        string query,
+        TFilter filters,
+        int limit = 1,
+        double minRelevanceScore = 0.7,
+        bool withEmbeddings = false,
+        CancellationToken cancellationToken = default);
+}

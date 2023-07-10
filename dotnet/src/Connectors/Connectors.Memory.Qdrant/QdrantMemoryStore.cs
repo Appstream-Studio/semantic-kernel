@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.AI.Embeddings;
 using Microsoft.SemanticKernel.Connectors.Memory.Qdrant.Diagnostics;
+using Microsoft.SemanticKernel.Connectors.Memory.Qdrant.Http.ApiSchema;
 using Microsoft.SemanticKernel.Memory;
 
 namespace Microsoft.SemanticKernel.Connectors.Memory.Qdrant;
@@ -20,7 +22,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.Qdrant;
 /// <remarks>The Embedding data is saved to a Qdrant Vector Database instance specified in the constructor by url and port.
 /// The embedding data persists between subsequent instances and has similarity search capability.
 /// </remarks>
-public class QdrantMemoryStore : IMemoryStore
+public class QdrantMemoryStore : IMemoryStore<QdrantFilter>
 {
     /// <summary>
     /// The Qdrant Vector Database memory store logger.
@@ -348,11 +350,56 @@ public class QdrantMemoryStore : IMemoryStore
         bool withEmbeddings = false,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        await foreach (var s in this.GetNearestMatchesAsync(
+            collectionName: collectionName,
+            embedding: embedding,
+            filters: null,
+            limit: limit,
+            minRelevanceScore: minRelevanceScore,
+            withEmbeddings: withEmbeddings,
+            cancellationToken: cancellationToken))
+        {
+            yield return s;
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<(MemoryRecord, double)?> GetNearestMatchAsync(
+        string collectionName,
+        Embedding<float> embedding,
+        double minRelevanceScore = 0,
+        bool withEmbedding = false,
+        CancellationToken cancellationToken = default)
+    {
+        var results = this.GetNearestMatchesAsync(
+            collectionName: collectionName,
+            embedding: embedding,
+            minRelevanceScore: minRelevanceScore,
+            limit: 1,
+            withEmbeddings: withEmbedding,
+            cancellationToken: cancellationToken);
+
+        var record = await results.FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+
+        return (record.Item1, record.Item2);
+    }
+
+    /// <inheritdoc/>
+    public async IAsyncEnumerable<(MemoryRecord, double)> GetNearestMatchesAsync(
+        string collectionName,
+        Embedding<float> embedding,
+        QdrantFilter? filters,
+        int limit,
+        double minRelevanceScore = 0,
+        bool withEmbeddings = false,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
         IAsyncEnumerator<(QdrantVectorRecord, double)> enumerator = this._qdrantClient
             .FindNearestInCollectionAsync(
                 collectionName: collectionName,
                 target: embedding.Vector,
                 threshold: minRelevanceScore,
+                filters: filters,
                 top: limit,
                 withVectors: withEmbeddings,
                 cancellationToken: cancellationToken)
@@ -391,27 +438,6 @@ public class QdrantMemoryStore : IMemoryStore
                     result.Value.Item2);
             }
         } while (hasResult);
-    }
-
-    /// <inheritdoc/>
-    public async Task<(MemoryRecord, double)?> GetNearestMatchAsync(
-        string collectionName,
-        Embedding<float> embedding,
-        double minRelevanceScore = 0,
-        bool withEmbedding = false,
-        CancellationToken cancellationToken = default)
-    {
-        var results = this.GetNearestMatchesAsync(
-            collectionName: collectionName,
-            embedding: embedding,
-            minRelevanceScore: minRelevanceScore,
-            limit: 1,
-            withEmbeddings: withEmbedding,
-            cancellationToken: cancellationToken);
-
-        var record = await results.FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
-
-        return (record.Item1, record.Item2);
     }
 
     #region private ================================================================================
@@ -467,6 +493,5 @@ public class QdrantMemoryStore : IMemoryStore
 
         return vectorData;
     }
-
     #endregion
 }
