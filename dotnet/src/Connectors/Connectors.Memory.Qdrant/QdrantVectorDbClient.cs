@@ -183,7 +183,7 @@ public sealed class QdrantVectorDbClient : IQdrantVectorDbClient
         try
         {
             response.EnsureSuccessStatusCode();
-            var result = JsonSerializer.Deserialize<QdrantResponse>(responseContent);
+            var result = JsonSerializer.Deserialize<DeleteVectorsResponse>(responseContent);
             if (result?.Status == "ok")
             {
                 this._logger.LogDebug("Vector being deleted");
