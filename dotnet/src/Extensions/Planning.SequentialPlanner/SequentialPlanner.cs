@@ -15,7 +15,7 @@ namespace Microsoft.SemanticKernel.Planning;
 /// <summary>
 /// A planner that uses semantic function to create a sequential plan.
 /// </summary>
-public sealed class SequentialPlanner
+public sealed class SequentialPlanner : ISequentialPlanner
 {
     private const string StopSequence = "<!-- END -->";
 
@@ -42,19 +42,14 @@ public sealed class SequentialPlanner
             skillName: RestrictedSkillName,
             description: "Given a request or command or goal generate a step by step plan to " +
                          "fulfill the request using functions. This ability is also known as decision making and function flow",
-            maxTokens: this.Config.MaxTokens,
+            maxTokens: this.Config.MaxTokens ?? 1024,
             temperature: 0.0,
             stopSequences: new[] { StopSequence });
 
         this._context = kernel.CreateNewContext();
     }
 
-    /// <summary>
-    /// Create a plan for a goal.
-    /// </summary>
-    /// <param name="goal">The goal to create a plan for.</param>
-    /// <returns>The plan.</returns>
-    /// <exception cref="PlanningException">Thrown when the plan cannot be created.</exception>
+    /// <inheritdoc />
     public async Task<Plan> CreatePlanAsync(string goal)
     {
         if (string.IsNullOrEmpty(goal))
