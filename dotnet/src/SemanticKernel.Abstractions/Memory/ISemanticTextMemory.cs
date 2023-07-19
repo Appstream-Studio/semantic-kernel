@@ -109,6 +109,7 @@ public interface ISemanticTextMemory<TFilter> : ISemanticTextMemory
     /// <param name="collection">Collection where to save the information.</param>
     /// <param name="text">Information to save.</param>
     /// <param name="id">Unique identifier.</param>
+    /// <param name="key">Existing database key.</param>
     /// <param name="description">Optional description.</param>
     /// <param name="additionalMetadata">Optional string for saving custom metadata.</param>
     /// <param name="filterable">Optional object saved with the information allowing rigid filtering on its fields.</param>
@@ -118,6 +119,7 @@ public interface ISemanticTextMemory<TFilter> : ISemanticTextMemory
         string collection,
         string text,
         string id,
+        string? key = null,
         string? description = null,
         string? additionalMetadata = null,
         object? filterable = null,

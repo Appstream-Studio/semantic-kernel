@@ -164,6 +164,7 @@ public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticT
         string collection,
         string text,
         string id,
+        string? key = null,
         string? description = null,
         string? additionalMetadata = null,
         object? filterable = null,
@@ -171,7 +172,13 @@ public sealed class SemanticTextMemory<TFilter> : SemanticTextMemory, ISemanticT
     {
         var embedding = await this._embeddingGenerator.GenerateEmbeddingAsync(text, cancellationToken).ConfigureAwait(false);
         MemoryRecord data = MemoryRecord.LocalRecord(
-            id: id, text: text, description: description, additionalMetadata: additionalMetadata, embedding: embedding, filterable: filterable);
+            id: id,
+            text: text,
+            description: description,
+            additionalMetadata: additionalMetadata,
+            key: key,
+            embedding: embedding,
+            filterable: filterable);
 
         if (!(await this._storage.DoesCollectionExistAsync(collection, cancellationToken).ConfigureAwait(false)))
         {
